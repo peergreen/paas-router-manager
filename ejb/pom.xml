@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+  - JPaaS
+  - Copyright (C) 2012 Bull S.A.S.
+  - Contact: jasmine@ow2.org
+  -
+  - This library is free software; you can redistribute it and/or
+  - modify it under the terms of the GNU Lesser General Public
+  - License as published by the Free Software Foundation; either
+  - version 2.1 of the License, or any later version.
+  -
+  - This library is distributed in the hope that it will be useful,
+  - but WITHOUT ANY WARRANTY; without even the implied warranty of
+  - MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+  - Lesser General Public License for more details.
+  -
+  - You should have received a copy of the GNU Lesser General Public
+  - License along with this library; if not, write to the Free Software
+  - Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307
+  - USA
+  -
+  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+  - $Id$
+  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+-->
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <parent>
+    <groupId>org.ow2.jonas.jpaas</groupId>
+    <artifactId>jpaas-router-manager</artifactId>
+    <version>1.0.0-SNAPSHOT</version>
+  </parent>
+  <modelVersion>4.0.0</modelVersion>
+
+  <artifactId>router-manager-ejb</artifactId>
+  <name>JPaaS :: Router Manager : EJB</name>
+  <packaging>ejb</packaging>
+
+  <description>jPaaS :: Router Manager : EJB</description>
+
+  <dependencies>
+    <dependency>
+       <groupId>org.jboss.spec</groupId>
+       <artifactId>jboss-javaee-6.0</artifactId>
+       <version>1.0.0.Final</version>
+       <type>pom</type>
+       <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.ow2.jonas.jpaas</groupId>
+      <artifactId>router-manager-api</artifactId>
+      <version>1.0.0-SNAPSHOT</version>
+    </dependency>
+  </dependencies>
+
+  <build>
+    <plugins>
+      <plugin>
+        <artifactId>maven-compiler-plugin</artifactId>
+        <configuration>
+          <source>1.6</source>
+          <target>1.6</target>
+        </configuration>
+      </plugin>
+
+      <plugin>
+        <artifactId>maven-ejb-plugin</artifactId>
+        <configuration>
+          <ejbVersion>3.0</ejbVersion>
+        </configuration>
+      </plugin>
+    </plugins>
+  </build>
+
+</project>
