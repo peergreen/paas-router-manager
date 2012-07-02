@@ -25,8 +25,8 @@
 package org.ow2.jonas.jpaas.router.manager.bean;
 
 import org.ow2.easybeans.osgi.annotation.OSGiResource;
-import org.ow2.jonas.jpaas.catalog.facade.api.IPaasCatalogFacade;
-import org.ow2.jonas.jpaas.catalog.facade.object.PaasConfiguration;
+import org.ow2.jonas.jpaas.catalog.api.IPaasCatalogFacade;
+import org.ow2.jonas.jpaas.catalog.api.PaasConfiguration;
 import org.ow2.jonas.jpaas.router.manager.api.RouterManager;
 import org.ow2.jonas.jpaas.router.manager.api.RouterManagerBeanException;
 import org.ow2.jonas.jpaas.sr.facade.api.ISrPaasAgentFacade;
