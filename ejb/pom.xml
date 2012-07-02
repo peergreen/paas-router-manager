@@ -48,6 +48,32 @@
        <type>pom</type>
        <scope>provided</scope>
     </dependency>
+    <dependency>
+      <groupId>org.ow2.jonas.agent</groupId>
+      <artifactId>agent-management-api</artifactId>
+      <version>${jonas.agent.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>com.sun.jersey</groupId>
+      <artifactId>jersey-client</artifactId>
+      <version>${jersey.rest.client}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.ow2.jonas.jpaas.catalog</groupId>
+      <artifactId>jpaas-catalog</artifactId>
+      <version>${jpaas.catalog.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.ow2.jonas.jpaas</groupId>
+      <artifactId>system-representation</artifactId>
+      <version>${jpaas.sr.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.ow2.easybeans.osgi</groupId>
+      <artifactId>easybeans-osgi-annotations</artifactId>
+      <version>${easybeans.annotations.version}</version>
+    </dependency>
+    
   </dependencies>
 
   <build>
