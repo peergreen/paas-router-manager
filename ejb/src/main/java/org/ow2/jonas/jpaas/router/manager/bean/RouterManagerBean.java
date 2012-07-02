@@ -22,23 +22,19 @@
  * $Id$
  * --------------------------------------------------------------------------
  */
-package org.ow2.jonas.jpaas.router.manager;
+package org.ow2.jonas.jpaas.router.manager.bean;
 
-
-
+import org.ow2.jonas.jpaas.router.manager.api.RouterManager;
 import org.ow2.jonas.jpaas.router.manager.api.RouterManagerBeanException;
-import org.ow2.jonas.jpaas.router.manager.api.RouterManagerLocal;
-import org.ow2.jonas.jpaas.router.manager.api.RouterManagerRemote;
 
 import javax.ejb.Local;
 import javax.ejb.Remote;
 import javax.ejb.Stateless;
-import javax.print.DocFlavor;
 import java.util.List;
 
 @Stateless(mappedName="RouterManagerBean")
-@Local(RouterManagerLocal.class)
-@Remote(RouterManagerRemote.class)
+@Local(RouterManager.class)
+@Remote(RouterManager.class)
 public class RouterManagerBean {
 
   public RouterManagerBean() {

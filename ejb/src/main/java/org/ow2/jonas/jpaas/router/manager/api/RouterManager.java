@@ -27,7 +27,7 @@ package org.ow2.jonas.jpaas.router.manager.api;
 
 import java.util.List;
 
-public interface RouterManagerLocal {
+public interface RouterManager {
   public void createRouter(String routerName, String paasAgentName, String paasConfigurationName, Integer listenPort) throws RouterManagerBeanException;
 
   public void removeRouter(String routerName) throws RouterManagerBeanException ;
