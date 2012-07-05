@@ -5,4 +5,4 @@ Import-Package javax.ws.rs.core;version="[0,2)",\
 Export-Package org.ow2.jonas.jpaas.router.manager.api
 Private-Package org.ow2.jonas.jpaas.router.manager.bean
 
-Embed-Dependency      jersey-client
+Embed-Dependency      jersey-client, jersey-core
