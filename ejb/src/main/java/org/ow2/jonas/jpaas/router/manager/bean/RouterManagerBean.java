@@ -35,7 +35,7 @@ import java.util.List;
 @Stateless(mappedName="RouterManagerBean")
 @Local(RouterManager.class)
 @Remote(RouterManager.class)
-public class RouterManagerBean {
+public class RouterManagerBean implements RouterManager {
 
   public RouterManagerBean() {
   }
