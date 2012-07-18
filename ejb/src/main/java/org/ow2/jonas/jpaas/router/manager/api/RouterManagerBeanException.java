@@ -26,10 +26,14 @@ package org.ow2.jonas.jpaas.router.manager.api;
 
 public class RouterManagerBeanException extends Exception {
 
-   public RouterManagerBeanException() {}
+    public RouterManagerBeanException() {}
 
-   public RouterManagerBeanException(String message) {
-     super(message);
-   }
+    public RouterManagerBeanException(String message) {
+        super(message);
+    }
+
+    public RouterManagerBeanException(String message, Throwable t) {
+        super(message,t);
+    }
 
 }

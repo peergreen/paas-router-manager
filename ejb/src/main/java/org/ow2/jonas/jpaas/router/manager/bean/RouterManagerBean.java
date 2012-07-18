@@ -26,6 +26,7 @@ package org.ow2.jonas.jpaas.router.manager.bean;
 
 import org.ow2.easybeans.osgi.annotation.OSGiResource;
 import org.ow2.jonas.jpaas.catalog.api.IPaasCatalogFacade;
+import org.ow2.jonas.jpaas.catalog.api.PaasCatalogException;
 import org.ow2.jonas.jpaas.catalog.api.PaasConfiguration;
 import org.ow2.jonas.jpaas.router.manager.api.RouterManager;
 import org.ow2.jonas.jpaas.router.manager.api.RouterManagerBeanException;
@@ -156,8 +157,14 @@ public class RouterManagerBean implements RouterManager {
         }
 
         // Get configuration from catalog
-        PaasConfiguration containerConf = catalogEjb
-                .getPaasConfiguration(paasConfigurationName);
+        PaasConfiguration containerConf = null;
+        try {
+            containerConf = catalogEjb
+                    .getPaasConfiguration(paasConfigurationName);
+        } catch (PaasCatalogException e) {
+            throw new RouterManagerBeanException("Error to find the PaaS Configuration named " +
+                    paasConfigurationName + ".", e);
+        }
         if (!containerConf.getType().equals(PAAS_TYPE)) {
             throw new RouterManagerBeanException("Invalid paas type : "
                     + containerConf.getType().equals(PAAS_TYPE) + " - expected : "
