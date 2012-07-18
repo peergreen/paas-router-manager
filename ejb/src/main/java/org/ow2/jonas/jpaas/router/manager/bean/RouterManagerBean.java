@@ -1,5 +1,5 @@
 /**
- * JPaaS Util
+ * JPaaS
  * Copyright (C) 2012 Bull S.A.S.
  * Contact: jasmine@ow2.org
  *
