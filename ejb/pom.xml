@@ -64,8 +64,13 @@
       <version>${jpaas.catalog.version}</version>
     </dependency>
     <dependency>
-      <groupId>org.ow2.jonas.jpaas</groupId>
-      <artifactId>system-representation</artifactId>
+      <groupId>org.ow2.jonas.jpaas.system-representation</groupId>
+      <artifactId>system-representation-vo</artifactId>
+      <version>${jpaas.sr.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.ow2.jonas.jpaas.system-representation</groupId>
+      <artifactId>system-representation-ejb</artifactId>
       <version>${jpaas.sr.version}</version>
     </dependency>
     <dependency>
