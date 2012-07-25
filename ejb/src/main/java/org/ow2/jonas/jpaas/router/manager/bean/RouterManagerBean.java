@@ -304,7 +304,7 @@ public class RouterManagerBean implements RouterManager {
         // Ask for a reload
         sendRequestWithReply(
                 REST_TYPE.POST,
-                getUrl(agent.getApiUrl(), "/reload"),
+                getUrl(agent.getApiUrl(), "/apache-manager/server/action/reload"),
                 null,
                 null);
 
@@ -347,7 +347,12 @@ public class RouterManagerBean implements RouterManager {
             throw new RouterManagerBeanException("Unable to get the agent for router '" + routerName + "' !");
         }
 
-        // TODO stop httpd
+        // Stop httpd
+        sendRequestWithReply(
+                REST_TYPE.POST,
+                getUrl(agent.getApiUrl(), "/apache-manager/server/action/stop"),
+                null,
+                null);
 
         // update state in sr
         apacheJk.setState("STOPPED");
@@ -400,7 +405,7 @@ public class RouterManagerBean implements RouterManager {
 
         sendRequestWithReply(
                 REST_TYPE.POST,
-                getUrl(agent.getApiUrl(), "/worker/" + workerName),
+                getUrl(agent.getApiUrl(), "/jkmanager/worker/" + workerName),
                 params,
                 null);
 
@@ -446,7 +451,7 @@ public class RouterManagerBean implements RouterManager {
 
         sendRequestWithReply(
                 REST_TYPE.DELETE,
-                getUrl(agent.getApiUrl(), "/worker/" + workerName),
+                getUrl(agent.getApiUrl(), "/jkmanager/worker/" + workerName),
                 params,
                 null);
 
@@ -486,14 +491,11 @@ public class RouterManagerBean implements RouterManager {
             throw new RouterManagerBeanException("Unable to get the agent for router '" + routerName + "' !");
         }
 
-        // Add a worker
-        MultivaluedMap<String, String> params = new MultivaluedMapImpl();
-        params.add("name", workerName);
-
+        //Send request to the Agent to disable worker
         sendRequestWithReply(
                 REST_TYPE.POST,
-                getUrl(agent.getApiUrl(), "/worker/" + workerName + "/disable"),
-                params,
+                getUrl(agent.getApiUrl(), "/jkmanager/worker/" + workerName + "/disable"),
+                null,
                 null);
 
         // TODO disable the worker in sr
@@ -531,17 +533,14 @@ public class RouterManagerBean implements RouterManager {
             throw new RouterManagerBeanException("Unable to get the agent for router '" + routerName + "' !");
         }
 
-        // Add a worker
-        MultivaluedMap<String, String> params = new MultivaluedMapImpl();
-        params.add("name", workerName);
-
+        //Send request to the Agent to disable worker
         sendRequestWithReply(
                 REST_TYPE.POST,
-                getUrl(agent.getApiUrl(), "/worker/" + workerName + "/enable"),
-                params,
+                getUrl(agent.getApiUrl(), "/jkmanager/worker/" + workerName + "/enable"),
+                null,
                 null);
 
-        // TODO disable the worker in sr
+        // TODO enable the worker in sr
 
         logger.info("Router '" + routerName + "' - Worker '" +  workerName + "' enabled !");
     }
@@ -611,7 +610,7 @@ public class RouterManagerBean implements RouterManager {
 
         sendRequestWithReply(
                 REST_TYPE.POST,
-                getUrl(agent.getApiUrl(), "/loadbalancer/" + IbName),
+                getUrl(agent.getApiUrl(), "/jkmanager/loadbalancer/" + IbName),
                 params,
                 null);
 
@@ -619,12 +618,9 @@ public class RouterManagerBean implements RouterManager {
         List<WorkerVO> workerVOs = apacheJk.getWorkerList();
         List<WorkerVO> workerVOForThisLoadbalancer = new ArrayList<WorkerVO>();
 
-        // TODO : getName is missing on WorkerVO !!!
-
         for (WorkerVO wVO : workerVOs) {
             for(String s : workedList) {
-                if (false) {
-                    //if (wVO.getName().equals(s)) {
+                if (wVO.getName().equals(s)) {
                     workerVOForThisLoadbalancer.add(wVO);
                     break;
                 }
@@ -672,7 +668,7 @@ public class RouterManagerBean implements RouterManager {
 
         sendRequestWithReply(
                 REST_TYPE.DELETE,
-                getUrl(agent.getApiUrl(), "/loadbalancer/" + IbName),
+                getUrl(agent.getApiUrl(), "/jkmanager/loadbalancer/" + IbName),
                 params,
                 null);
 
