@@ -36,6 +36,7 @@ import org.ow2.jonas.jpaas.sr.facade.api.ISrPaasResourcePaasAgentLink;
 import org.ow2.jonas.jpaas.sr.facade.vo.ApacheJkVO;
 import org.ow2.jonas.jpaas.sr.facade.vo.PaasAgentVO;
 import org.ow2.jonas.jpaas.sr.facade.vo.PaasResourceVO;
+import org.ow2.jonas.jpaas.sr.facade.vo.PaasRouterVO;
 import org.ow2.jonas.jpaas.sr.facade.vo.WorkerVO;
 import org.ow2.util.log.Log;
 import org.ow2.util.log.LogFactory;
@@ -151,7 +152,14 @@ public class RouterManagerBean implements RouterManager {
         logger.info("Router '" + routerName + "' creating ....");
 
         // Get the agent
-        PaasAgentVO agent = srAgentEjb.getAgent(paasAgentName);
+        PaasAgentVO agent = null;
+        List<PaasAgentVO> paasAgentVOList = srAgentEjb.findAgents();
+        for (PaasAgentVO tmp : paasAgentVOList) {
+            if (tmp.getName().equals(paasAgentName)) {
+                agent = tmp;
+                break;
+            }
+        }
         if (agent == null) {
             throw new RouterManagerBeanException("Unable to get the agent '" + paasAgentName + "' !");
         }
@@ -177,8 +185,11 @@ public class RouterManagerBean implements RouterManager {
         }
 
         // Create the router in the SR
-        if (srApacheJkEjb.getApacheJkRouter(routerName) != null) {
-            throw new RouterManagerBeanException("Router '" + routerName + "' already exist!");
+        List<ApacheJkVO> apacheJkVOList = srApacheJkEjb.findApacheJkRouters();
+        for (ApacheJkVO tmp : apacheJkVOList) {
+            if (tmp.getName().equals(routerName)) {
+                throw new RouterManagerBeanException("Router '" + routerName + "' already exist!");
+            }
         }
 
         ApacheJkVO apacheJk = new ApacheJkVO();
@@ -226,10 +237,18 @@ public class RouterManagerBean implements RouterManager {
         logger.info("Router '" + routerName + "' deleting ....");
 
         // get the router from SR
-        ApacheJkVO apacheJk = srApacheJkEjb.getApacheJkRouter(routerName);
+        ApacheJkVO apacheJk = null;
+        List<ApacheJkVO> apacheJkVOList = srApacheJkEjb.findApacheJkRouters();
+        for (ApacheJkVO tmp : apacheJkVOList) {
+            if (tmp.getName().equals(routerName)) {
+                apacheJk = tmp;
+                break;
+            }
+        }
         if (apacheJk == null) {
             throw new RouterManagerBeanException("Router '" + routerName + "' doesn't exist !");
         }
+
         apacheJk.setState("DELETING");
         srApacheJkEjb.updateApacheJkRouter(apacheJk);
 
@@ -259,10 +278,18 @@ public class RouterManagerBean implements RouterManager {
         logger.info("Router '" + routerName + "' starting ....");
 
         // get the router from SR
-        ApacheJkVO apacheJk = srApacheJkEjb.getApacheJkRouter(routerName);
+        ApacheJkVO apacheJk = null;
+        List<ApacheJkVO> apacheJkVOList = srApacheJkEjb.findApacheJkRouters();
+        for (ApacheJkVO tmp : apacheJkVOList) {
+            if (tmp.getName().equals(routerName)) {
+                apacheJk = tmp;
+                break;
+            }
+        }
         if (apacheJk == null) {
             throw new RouterManagerBeanException("Router '" + routerName + "' doesn't exist !");
         }
+
         apacheJk.setState("STARTING");
         srApacheJkEjb.updateApacheJkRouter(apacheJk);
 
@@ -298,11 +325,19 @@ public class RouterManagerBean implements RouterManager {
         logger.info("Router '" + routerName + "' stopping ....");
 
         // get the router from SR
-        ApacheJkVO apacheJk = srApacheJkEjb.getApacheJkRouter(routerName);
+        ApacheJkVO apacheJk = null;
+        List<ApacheJkVO> apacheJkVOList = srApacheJkEjb.findApacheJkRouters();
+        for (ApacheJkVO tmp : apacheJkVOList) {
+            if (tmp.getName().equals(routerName)) {
+                apacheJk = tmp;
+                break;
+            }
+        }
         if (apacheJk == null) {
             throw new RouterManagerBeanException("Router '" + routerName + "' doesn't exist !");
         }
-        apacheJk.setState("STARTING");
+
+        apacheJk.setState("STOPPING");
         srApacheJkEjb.updateApacheJkRouter(apacheJk);
 
         // Get the agent
@@ -336,7 +371,14 @@ public class RouterManagerBean implements RouterManager {
         logger.info("Router '" + routerName + "' - Create Worker '" +  workerName + "' (host=" + targetHost + ", port=" + targetPortNumber + ")");
 
         // get the router from SR
-        ApacheJkVO apacheJk = srApacheJkEjb.getApacheJkRouter(routerName);
+        ApacheJkVO apacheJk = null;
+        List<ApacheJkVO> apacheJkVOList = srApacheJkEjb.findApacheJkRouters();
+        for (ApacheJkVO tmp : apacheJkVOList) {
+            if (tmp.getName().equals(routerName)) {
+                apacheJk = tmp;
+                break;
+            }
+        }
         if (apacheJk == null) {
             throw new RouterManagerBeanException("Router '" + routerName + "' doesn't exist !");
         }
@@ -378,7 +420,14 @@ public class RouterManagerBean implements RouterManager {
         logger.info("Router '" + routerName + "' - Delete Worker '" +  workerName + "'");
 
         // get the router from SR
-        ApacheJkVO apacheJk = srApacheJkEjb.getApacheJkRouter(routerName);
+        ApacheJkVO apacheJk = null;
+        List<ApacheJkVO> apacheJkVOList = srApacheJkEjb.findApacheJkRouters();
+        for (ApacheJkVO tmp : apacheJkVOList) {
+            if (tmp.getName().equals(routerName)) {
+                apacheJk = tmp;
+                break;
+            }
+        }
         if (apacheJk == null) {
             throw new RouterManagerBeanException("Router '" + routerName + "' doesn't exist !");
         }
@@ -411,7 +460,14 @@ public class RouterManagerBean implements RouterManager {
         logger.info("Router '" + routerName + "' - Disable Worker '" +  workerName + "'");
 
         // get the router from SR
-        ApacheJkVO apacheJk = srApacheJkEjb.getApacheJkRouter(routerName);
+        ApacheJkVO apacheJk = null;
+        List<ApacheJkVO> apacheJkVOList = srApacheJkEjb.findApacheJkRouters();
+        for (ApacheJkVO tmp : apacheJkVOList) {
+            if (tmp.getName().equals(routerName)) {
+                apacheJk = tmp;
+                break;
+            }
+        }
         if (apacheJk == null) {
             throw new RouterManagerBeanException("Router '" + routerName + "' doesn't exist !");
         }
@@ -443,7 +499,14 @@ public class RouterManagerBean implements RouterManager {
         logger.info("Router '" + routerName + "' - Enable Worker '" +  workerName + "'");
 
         // get the router from SR
-        ApacheJkVO apacheJk = srApacheJkEjb.getApacheJkRouter(routerName);
+        ApacheJkVO apacheJk = null;
+        List<ApacheJkVO> apacheJkVOList = srApacheJkEjb.findApacheJkRouters();
+        for (ApacheJkVO tmp : apacheJkVOList) {
+            if (tmp.getName().equals(routerName)) {
+                apacheJk = tmp;
+                break;
+            }
+        }
         if (apacheJk == null) {
             throw new RouterManagerBeanException("Router '" + routerName + "' doesn't exist !");
         }
@@ -485,7 +548,14 @@ public class RouterManagerBean implements RouterManager {
         logger.info("Router '" + routerName + "' - Create Loadbalancer '" +  IbName + "' (wk=" + workedList + ", mt=" + mountsPoints + ")");
 
         // get the router from SR
-        ApacheJkVO apacheJk = srApacheJkEjb.getApacheJkRouter(routerName);
+        ApacheJkVO apacheJk = null;
+        List<ApacheJkVO> apacheJkVOList = srApacheJkEjb.findApacheJkRouters();
+        for (ApacheJkVO tmp : apacheJkVOList) {
+            if (tmp.getName().equals(routerName)) {
+                apacheJk = tmp;
+                break;
+            }
+        }
         if (apacheJk == null) {
             throw new RouterManagerBeanException("Router '" + routerName + "' doesn't exist !");
         }
@@ -563,7 +633,14 @@ public class RouterManagerBean implements RouterManager {
         logger.info("Router '" + routerName + "' - Delete Loadbalancer '" +  IbName + "'");
 
         // get the router from SR
-        ApacheJkVO apacheJk = srApacheJkEjb.getApacheJkRouter(routerName);
+        ApacheJkVO apacheJk = null;
+        List<ApacheJkVO> apacheJkVOList = srApacheJkEjb.findApacheJkRouters();
+        for (ApacheJkVO tmp : apacheJkVOList) {
+            if (tmp.getName().equals(routerName)) {
+                apacheJk = tmp;
+                break;
+            }
+        }
         if (apacheJk == null) {
             throw new RouterManagerBeanException("Router '" + routerName + "' doesn't exist !");
         }
