@@ -36,7 +36,6 @@ import org.ow2.jonas.jpaas.sr.facade.api.ISrPaasResourcePaasAgentLink;
 import org.ow2.jonas.jpaas.sr.facade.vo.ApacheJkVO;
 import org.ow2.jonas.jpaas.sr.facade.vo.PaasAgentVO;
 import org.ow2.jonas.jpaas.sr.facade.vo.PaasResourceVO;
-import org.ow2.jonas.jpaas.sr.facade.vo.PaasRouterVO;
 import org.ow2.jonas.jpaas.sr.facade.vo.WorkerVO;
 import org.ow2.util.log.Log;
 import org.ow2.util.log.LogFactory;
@@ -139,10 +138,10 @@ public class RouterManagerBean implements RouterManager {
 
     /**
      * Create a router
-     * @param routerName
-     * @param paasAgentName
-     * @param paasConfigurationName
-     * @param listenPort
+     * @param routerName Name of the router to create
+     * @param paasAgentName Name of the PaasAgent
+     * @param paasConfigurationName Name of the PaasConfiguration to use
+     * @param listenPort the listen port
      * @throws RouterManagerBeanException
      */
     public void createRouter(String routerName, String paasAgentName,
@@ -195,7 +194,7 @@ public class RouterManagerBean implements RouterManager {
         ApacheJkVO apacheJk = new ApacheJkVO();
         apacheJk.setName(routerName);
         apacheJk.setState("Init");
-        srApacheJkEjb.createApacheJkRouter(apacheJk);
+        apacheJk = srApacheJkEjb.createApacheJkRouter(apacheJk);
 
         // if the link doesn't exist between agent and router, create it
         boolean alreadyExist = false;
@@ -204,7 +203,8 @@ public class RouterManagerBean implements RouterManager {
             if (paasResourceVO instanceof ApacheJkVO) {
                 ApacheJkVO apacheJkResourceVO = (ApacheJkVO) paasResourceVO;
                 if (apacheJkResourceVO.getName().equals(routerName)) {
-                    logger.debug("Link between router '"  + routerName + "' and agent '" + paasAgentName + "' already exist!");
+                    logger.debug("Link between router '"  + routerName + "' and agent '" + paasAgentName +
+                            "' already exist!");
                     alreadyExist = true;
                     break;
                 }
@@ -228,7 +228,7 @@ public class RouterManagerBean implements RouterManager {
 
     /**
      * Remove a router
-     * @param routerName
+     * @param routerName name of the router to remove
      * @throws RouterManagerBeanException
      */
     public void removeRouter(String routerName)
@@ -261,7 +261,7 @@ public class RouterManagerBean implements RouterManager {
 
         //TODO remove the vhost
 
-        // update state in sr
+        // remove router in sr
         srApacheJkEjb.deleteApacheJkRouter(routerName);
 
         logger.info("Router '" + routerName + "' deleted.");
@@ -269,7 +269,7 @@ public class RouterManagerBean implements RouterManager {
 
     /**
      * Start a router
-     * @param routerName
+     * @param routerName Name of the router to start
      * @throws RouterManagerBeanException
      */
     public void startRouter(String routerName)
@@ -317,7 +317,7 @@ public class RouterManagerBean implements RouterManager {
 
     /**
      * Stop a router
-     * @param routerName
+     * @param routerName Name of the router to stop
      * @throws RouterManagerBeanException
      */
     public void stopRouter(String routerName) throws RouterManagerBeanException {
@@ -358,17 +358,18 @@ public class RouterManagerBean implements RouterManager {
 
     /**
      * Add a worker
-     * @param routerName
-     * @param workerName
-     * @param targetHost
-     * @param targetPortNumber
+     * @param routerName Name of the router
+     * @param workerName Name of the worker to create
+     * @param targetHost The worker target host
+     * @param targetPortNumber the worker target port number
      * @throws RouterManagerBeanException
      */
     public void createWorker(String routerName, String workerName,
             String targetHost, Integer targetPortNumber)
             throws RouterManagerBeanException {
 
-        logger.info("Router '" + routerName + "' - Create Worker '" +  workerName + "' (host=" + targetHost + ", port=" + targetPortNumber + ")");
+        logger.info("Router '" + routerName + "' - Create Worker '" +  workerName + "' (host=" + targetHost +
+                ", port=" + targetPortNumber + ")");
 
         // get the router from SR
         ApacheJkVO apacheJk = null;
@@ -411,8 +412,8 @@ public class RouterManagerBean implements RouterManager {
 
     /**
      * Remove a worker
-     * @param routerName
-     * @param workerName
+     * @param routerName Name of the router
+     * @param workerName Name of the worker to remove
      * @throws RouterManagerBeanException
      */
     public void removeWorker(String routerName, String workerName)
@@ -455,6 +456,12 @@ public class RouterManagerBean implements RouterManager {
         logger.info("Router '" + routerName + "' - Worker '" +  workerName + "' removed !");
     }
 
+    /**
+     * Disable a worker
+     * @param routerName Name of the router
+     * @param workerName Name of the worker to disable
+     * @throws RouterManagerBeanException
+     */
     public void disableWorker(String routerName, String workerName)
             throws RouterManagerBeanException {
         logger.info("Router '" + routerName + "' - Disable Worker '" +  workerName + "'");
@@ -494,6 +501,12 @@ public class RouterManagerBean implements RouterManager {
         logger.info("Router '" + routerName + "' - Worker '" +  workerName + "' disabled !");
     }
 
+    /**
+     * Enable a worker
+     * @param routerName Name of the router
+     * @param workerName Name of the worker to enable
+     * @throws RouterManagerBeanException
+     */
     public void enableWorker(String routerName, String workerName)
             throws RouterManagerBeanException {
         logger.info("Router '" + routerName + "' - Enable Worker '" +  workerName + "'");
@@ -535,17 +548,18 @@ public class RouterManagerBean implements RouterManager {
 
     /**
      * Create a loadbalancer
-     * @param routerName
-     * @param IbName
-     * @param workedList
-     * @param mountsPoints
+     * @param routerName Name of the router
+     * @param IbName  Name of the load balancer
+     * @param workedList  the workers balanced by this load balancer
+     * @param mountsPoints the mount Points of this load balancer
      * @throws RouterManagerBeanException
      */
     public void createLoadBalancer(String routerName, String IbName,
             List<String> workedList, List<String> mountsPoints)
             throws RouterManagerBeanException {
 
-        logger.info("Router '" + routerName + "' - Create Loadbalancer '" +  IbName + "' (wk=" + workedList + ", mt=" + mountsPoints + ")");
+        logger.info("Router '" + routerName + "' - Create Loadbalancer '" +  IbName + "' (wk=" + workedList +
+                ", mt=" + mountsPoints + ")");
 
         // get the router from SR
         ApacheJkVO apacheJk = null;
@@ -624,8 +638,8 @@ public class RouterManagerBean implements RouterManager {
 
     /**
      * Remove a loadbalancer
-     * @param routerName
-     * @param IbName
+     * @param routerName Name of the router
+     * @param IbName  Name of the load balancer
      * @throws RouterManagerBeanException
      */
     public void removeLoadBalancer(String routerName, String IbName)
@@ -669,20 +683,22 @@ public class RouterManagerBean implements RouterManager {
     }
 
     /**
-     * @param path
+     * @param agentApi the api url
+     * @param path the path to add
      * @return the HTTP URL
      */
     private String getUrl(final String agentApi, final String path) {
-        String url = agentApi + "/" + path;
-        return url;
+        return agentApi + "/" + path;
     }
 
     /**
      * Send a REST request and get response
      *
+     * @param type
+     *            Http type of the request
      * @param url
      *            request path
-     * @param requestContent
+     * @param params
      *            XML content of the request
      * @param responseClass
      *            response class
