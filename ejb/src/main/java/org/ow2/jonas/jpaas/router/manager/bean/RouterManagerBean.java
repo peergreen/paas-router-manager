@@ -34,6 +34,7 @@ import org.ow2.jonas.jpaas.sr.facade.api.ISrPaasAgentFacade;
 import org.ow2.jonas.jpaas.sr.facade.api.ISrPaasApacheJkRouterFacade;
 import org.ow2.jonas.jpaas.sr.facade.api.ISrPaasResourcePaasAgentLink;
 import org.ow2.jonas.jpaas.sr.facade.vo.ApacheJkVO;
+import org.ow2.jonas.jpaas.sr.facade.vo.LoadBalancerVO;
 import org.ow2.jonas.jpaas.sr.facade.vo.PaasAgentVO;
 import org.ow2.jonas.jpaas.sr.facade.vo.PaasResourceVO;
 import org.ow2.jonas.jpaas.sr.facade.vo.WorkerVO;
@@ -401,7 +402,6 @@ public class RouterManagerBean implements RouterManager {
         params.add("name", workerName);
         params.add("host", targetHost);
         params.add("port", targetPortNumber.toString());
-        params.add("lbFactor", "1");
 
         sendRequestWithReply(
                 REST_TYPE.POST,
@@ -498,7 +498,17 @@ public class RouterManagerBean implements RouterManager {
                 null,
                 null);
 
-        // TODO disable the worker in sr
+        // disable the worker in sr
+        List<WorkerVO> workerVOs = apacheJk.getWorkerList();
+
+        for (WorkerVO wVO : workerVOs) {
+            if (wVO.getName().equals(workerName)) {
+                wVO.setStatus("DISABLE");
+                break;
+            }
+        }
+        srApacheJkEjb.updateApacheJkRouter(apacheJk);
+
 
         logger.info("Router '" + routerName + "' - Worker '" +  workerName + "' disabled !");
     }
@@ -540,7 +550,17 @@ public class RouterManagerBean implements RouterManager {
                 null,
                 null);
 
-        // TODO enable the worker in sr
+        //enable the worker in sr
+        List<WorkerVO> workerVOs = apacheJk.getWorkerList();
+
+        for (WorkerVO wVO : workerVOs) {
+            if (wVO.getName().equals(workerName)) {
+                wVO.setStatus("ENABLE");
+                break;
+            }
+        }
+        srApacheJkEjb.updateApacheJkRouter(apacheJk);
+
 
         logger.info("Router '" + routerName + "' - Worker '" +  workerName + "' enabled !");
     }
@@ -548,16 +568,16 @@ public class RouterManagerBean implements RouterManager {
     /**
      * Create a loadbalancer
      * @param routerName Name of the router
-     * @param IbName  Name of the load balancer
+     * @param lbName  Name of the load balancer
      * @param workedList  the workers balanced by this load balancer
      * @param mountsPoints the mount Points of this load balancer
      * @throws RouterManagerBeanException
      */
-    public void createLoadBalancer(String routerName, String IbName,
+    public void createLoadBalancer(String routerName, String lbName,
             List<String> workedList, List<String> mountsPoints)
             throws RouterManagerBeanException {
 
-        logger.info("Router '" + routerName + "' - Create Loadbalancer '" +  IbName + "' (wk=" + workedList +
+        logger.info("Router '" + routerName + "' - Create Loadbalancer '" +  lbName + "' (wk=" + workedList +
                 ", mt=" + mountsPoints + ")");
 
         // get the router from SR
@@ -580,7 +600,7 @@ public class RouterManagerBean implements RouterManager {
             throw new RouterManagerBeanException("Unable to get the agent for router '" + routerName + "' !");
         }
 
-        // Add a loadbalancer
+        // Create a String from the WorkedList
         String wl = "";
         boolean first = true;
         for(String s : workedList) {
@@ -592,55 +612,45 @@ public class RouterManagerBean implements RouterManager {
             wl += s;
         }
 
-        String mp = "";
-        first = true;
-        for(String m : mountsPoints) {
-            if (first) {
-                first=false;
-            } else {
-                mp += ",";
-            }
-            mp += m;
-        }
-
+        //Send request to the Agent to create the loadBalancer
         MultivaluedMap<String, String> params = new MultivaluedMapImpl();
-        params.add("name", IbName);
+        params.add("name", lbName);
         params.add("wl", wl);
-        params.add("mp", mp);
 
         sendRequestWithReply(
                 REST_TYPE.POST,
-                getUrl(agent.getApiUrl(), "/jkmanager/loadbalancer/" + IbName),
+                getUrl(agent.getApiUrl(), "/jkmanager/loadbalancer/" + lbName),
                 params,
                 null);
 
-        // create the worker in sr
-        List<WorkerVO> workerVOs = apacheJk.getWorkerList();
-        List<WorkerVO> workerVOForThisLoadbalancer = new ArrayList<WorkerVO>();
 
-        for (WorkerVO wVO : workerVOs) {
-            for(String s : workedList) {
-                if (wVO.getName().equals(s)) {
-                    workerVOForThisLoadbalancer.add(wVO);
-                    break;
-                }
-            }
+        //Send requests to the Agent to create the loadBalancer Mount Points
+        for (String path : mountsPoints) {
+            params.clear();
+            params.add("path", path);
+
+            sendRequestWithReply(
+                    REST_TYPE.POST,
+                    getUrl(agent.getApiUrl(), "/jkmanager/mount/" + lbName),
+                    params,
+                    null);
         }
 
-        srApacheJkEjb.addLoadBalancer(routerName, IbName, workedList, workerVOForThisLoadbalancer);
+        // create the LoadBalancer in sr
+        srApacheJkEjb.addLoadBalancer(routerName, lbName, mountsPoints, workedList);
 
-        logger.info("Router '" + routerName + "' - Loadbalancer '" +  IbName + "' created !");
+        logger.info("Router '" + routerName + "' - Loadbalancer '" +  lbName + "' created !");
     }
 
     /**
      * Remove a loadbalancer
      * @param routerName Name of the router
-     * @param IbName  Name of the load balancer
+     * @param lbName  Name of the load balancer
      * @throws RouterManagerBeanException
      */
-    public void removeLoadBalancer(String routerName, String IbName)
+    public void removeLoadBalancer(String routerName, String lbName)
             throws RouterManagerBeanException {
-        logger.info("Router '" + routerName + "' - Delete Loadbalancer '" +  IbName + "'");
+        logger.info("Router '" + routerName + "' - Delete Loadbalancer '" +  lbName + "'");
 
         // get the router from SR
         ApacheJkVO apacheJk = null;
@@ -661,21 +671,47 @@ public class RouterManagerBean implements RouterManager {
         if (agent == null) {
             throw new RouterManagerBeanException("Unable to get the agent for router '" + routerName + "' !");
         }
+        
+        // Get the Load Balancer
+        List<LoadBalancerVO> loadBalancerVOList = apacheJk.getLoadBalancerList();
+        LoadBalancerVO loadBalancer = null;
+        for (LoadBalancerVO lbVO : loadBalancerVOList) {
+            if (lbName.equals(lbVO.getName())) {
+                loadBalancer = lbVO;
+                break;
+            }
+        }
+        if (loadBalancer == null) {
+            throw new RouterManagerBeanException("Unable to get the Load Balancer '" + lbName + "' for router '" +
+                    routerName + "' !");
+        }
 
-        // Add a worker
-        MultivaluedMap<String, String> params = new MultivaluedMapImpl();
-        params.add("name", IbName);
-
+        // Remove a loadbalancer
+       
+        //Send request to the Agent to remove the Load Balancer        
         sendRequestWithReply(
                 REST_TYPE.DELETE,
-                getUrl(agent.getApiUrl(), "/jkmanager/loadbalancer/" + IbName),
-                params,
+                getUrl(agent.getApiUrl(), "/jkmanager/loadbalancer/" + lbName),
+                null,
                 null);
+        
+        //Send requests to the Agent to remove the loadBalancer Mount Points
+        MultivaluedMap<String, String> params = new MultivaluedMapImpl();
+        for (String path : loadBalancer.getMountPoints()) {
+            params.clear();
+            params.add("path", path);
 
-        // create the worker in sr
-        srApacheJkEjb.removeLoadBalancer(routerName, IbName);
+            sendRequestWithReply(
+                    REST_TYPE.DELETE,
+                    getUrl(agent.getApiUrl(), "/jkmanager/mount/" + lbName),
+                    params,
+                    null);
+        }
 
-        logger.info("Router '" + routerName + "' - Loadbalancer '" +  IbName + "' removed !");
+        // remove the loadbalancer in sr
+        srApacheJkEjb.removeLoadBalancer(routerName, lbName);
+
+        logger.info("Router '" + routerName + "' - Loadbalancer '" +  lbName + "' removed !");
     }
 
     /**
