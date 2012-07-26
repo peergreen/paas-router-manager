@@ -199,11 +199,11 @@ public class RouterManagerBean implements RouterManager {
 
         // if the link doesn't exist between agent and router, create it
         boolean alreadyExist = false;
-        List <PaasResourceVO> paasResources = srApacheAgentLinkEjb.findPaasResourcesByAgent(paasAgentName);
+        List <PaasResourceVO> paasResources = srApacheAgentLinkEjb.findPaasResourcesByAgent(agent.getId());
         for (PaasResourceVO paasResourceVO : paasResources) {
             if (paasResourceVO instanceof ApacheJkVO) {
                 ApacheJkVO apacheJkResourceVO = (ApacheJkVO) paasResourceVO;
-                if (apacheJkResourceVO.getName().equals(routerName)) {
+                if (apacheJkResourceVO.getId().equals(apacheJk.getId())) {
                     logger.debug("Link between router '"  + routerName + "' and agent '" + paasAgentName +
                             "' already exist!");
                     alreadyExist = true;
@@ -212,7 +212,7 @@ public class RouterManagerBean implements RouterManager {
             }
         }
         if (!alreadyExist) {
-            srApacheAgentLinkEjb.addPaasResourceAgentLink(routerName, paasAgentName);
+            srApacheAgentLinkEjb.addPaasResourceAgentLink(apacheJk.getId(), agent.getId());
         }
 
         // TODO use port range to customize apache conf (vhost)
@@ -254,7 +254,7 @@ public class RouterManagerBean implements RouterManager {
         srApacheJkEjb.updateApacheJkRouter(apacheJk);
 
         // Get the agent
-        PaasAgentVO agent = srApacheAgentLinkEjb.findAgentByPaasResource(routerName);
+        PaasAgentVO agent = srApacheAgentLinkEjb.findAgentByPaasResource(apacheJk.getId());
 
         if (agent == null) {
             throw new RouterManagerBeanException("Unable to get the agent for router '" + routerName + "' !");
@@ -263,7 +263,7 @@ public class RouterManagerBean implements RouterManager {
         //TODO remove the vhost
 
         // remove router in sr
-        srApacheJkEjb.deleteApacheJkRouter(routerName);
+        srApacheJkEjb.deleteApacheJkRouter(apacheJk.getId());
 
         logger.info("Router '" + routerName + "' deleted.");
     }
@@ -295,7 +295,7 @@ public class RouterManagerBean implements RouterManager {
         srApacheJkEjb.updateApacheJkRouter(apacheJk);
 
         // Get the agent
-        PaasAgentVO agent = srApacheAgentLinkEjb.findAgentByPaasResource(routerName);
+        PaasAgentVO agent = srApacheAgentLinkEjb.findAgentByPaasResource(apacheJk.getId());
 
         if (agent == null) {
             throw new RouterManagerBeanException("Unable to get the agent for router '" + routerName + "' !");
@@ -342,7 +342,7 @@ public class RouterManagerBean implements RouterManager {
         srApacheJkEjb.updateApacheJkRouter(apacheJk);
 
         // Get the agent
-        PaasAgentVO agent = srApacheAgentLinkEjb.findAgentByPaasResource(routerName);
+        PaasAgentVO agent = srApacheAgentLinkEjb.findAgentByPaasResource(apacheJk.getId());
 
         if (agent == null) {
             throw new RouterManagerBeanException("Unable to get the agent for router '" + routerName + "' !");
@@ -391,7 +391,7 @@ public class RouterManagerBean implements RouterManager {
         }
 
         // Get the agent
-        PaasAgentVO agent = srApacheAgentLinkEjb.findAgentByPaasResource(routerName);
+        PaasAgentVO agent = srApacheAgentLinkEjb.findAgentByPaasResource(apacheJk.getId());
 
         if (agent == null) {
             throw new RouterManagerBeanException("Unable to get the agent for router '" + routerName + "' !");
@@ -410,7 +410,7 @@ public class RouterManagerBean implements RouterManager {
                 null);
 
         // create the worker in sr
-        srApacheJkEjb.addWorker(routerName, workerName, targetHost, targetPortNumber);
+        srApacheJkEjb.addWorker(apacheJk.getId(), workerName, targetHost, targetPortNumber);
 
         logger.info("Router '" + routerName + "' - Worker '" +  workerName + "' created !");
     }
@@ -439,7 +439,7 @@ public class RouterManagerBean implements RouterManager {
         }
 
         // Get the agent
-        PaasAgentVO agent = srApacheAgentLinkEjb.findAgentByPaasResource(routerName);
+        PaasAgentVO agent = srApacheAgentLinkEjb.findAgentByPaasResource(apacheJk.getId());
 
         if (agent == null) {
             throw new RouterManagerBeanException("Unable to get the agent for router '" + routerName + "' !");
@@ -456,7 +456,7 @@ public class RouterManagerBean implements RouterManager {
                 null);
 
         // create the worker in sr
-        srApacheJkEjb.removeWorker(routerName, workerName);
+        srApacheJkEjb.removeWorker(apacheJk.getId(), workerName);
 
         logger.info("Router '" + routerName + "' - Worker '" +  workerName + "' removed !");
     }
@@ -485,7 +485,7 @@ public class RouterManagerBean implements RouterManager {
         }
 
         // Get the agent
-        PaasAgentVO agent = srApacheAgentLinkEjb.findAgentByPaasResource(routerName);
+        PaasAgentVO agent = srApacheAgentLinkEjb.findAgentByPaasResource(apacheJk.getId());
 
         if (agent == null) {
             throw new RouterManagerBeanException("Unable to get the agent for router '" + routerName + "' !");
@@ -537,7 +537,7 @@ public class RouterManagerBean implements RouterManager {
         }
 
         // Get the agent
-        PaasAgentVO agent = srApacheAgentLinkEjb.findAgentByPaasResource(routerName);
+        PaasAgentVO agent = srApacheAgentLinkEjb.findAgentByPaasResource(apacheJk.getId());
 
         if (agent == null) {
             throw new RouterManagerBeanException("Unable to get the agent for router '" + routerName + "' !");
@@ -594,7 +594,7 @@ public class RouterManagerBean implements RouterManager {
         }
 
         // Get the agent
-        PaasAgentVO agent = srApacheAgentLinkEjb.findAgentByPaasResource(routerName);
+        PaasAgentVO agent = srApacheAgentLinkEjb.findAgentByPaasResource(apacheJk.getId());
 
         if (agent == null) {
             throw new RouterManagerBeanException("Unable to get the agent for router '" + routerName + "' !");
@@ -637,7 +637,7 @@ public class RouterManagerBean implements RouterManager {
         }
 
         // create the LoadBalancer in sr
-        srApacheJkEjb.addLoadBalancer(routerName, lbName, mountsPoints, workedList);
+        srApacheJkEjb.addLoadBalancer(apacheJk.getId(), lbName, mountsPoints, workedList);
 
         logger.info("Router '" + routerName + "' - Loadbalancer '" +  lbName + "' created !");
     }
@@ -666,7 +666,7 @@ public class RouterManagerBean implements RouterManager {
         }
 
         // Get the agent
-        PaasAgentVO agent = srApacheAgentLinkEjb.findAgentByPaasResource(routerName);
+        PaasAgentVO agent = srApacheAgentLinkEjb.findAgentByPaasResource(apacheJk.getId());
 
         if (agent == null) {
             throw new RouterManagerBeanException("Unable to get the agent for router '" + routerName + "' !");
@@ -709,7 +709,7 @@ public class RouterManagerBean implements RouterManager {
         }
 
         // remove the loadbalancer in sr
-        srApacheJkEjb.removeLoadBalancer(routerName, lbName);
+        srApacheJkEjb.removeLoadBalancer(apacheJk.getId(), lbName);
 
         logger.info("Router '" + routerName + "' - Loadbalancer '" +  lbName + "' removed !");
     }
