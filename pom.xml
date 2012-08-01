@@ -50,6 +50,7 @@
     <jpaas.sr.version>1.1.1-SNAPSHOT</jpaas.sr.version>
     <easybeans.annotations.version>2.0.0-M1</easybeans.annotations.version>
     <ow2-bundles.version>1.0.32</ow2-bundles.version>
+    <ow2-spec.version>1.0.10</ow2-spec.version>
    </properties>
    
   <developers/>
