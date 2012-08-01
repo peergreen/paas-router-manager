@@ -86,6 +86,11 @@ public class RouterManagerBean implements RouterManager {
     private static final int HTTP_STATUS_NO_CONTENT = 204;
 
     /**
+     * Http Created status
+     */
+    private static final int HTTP_STATUS_CREATED = 201;
+
+    /**
      * Expected paas type
      */
     private static final String PAAS_TYPE = "router";
@@ -305,7 +310,7 @@ public class RouterManagerBean implements RouterManager {
         // Ask for a reload
         sendRequestWithReply(
                 REST_TYPE.POST,
-                getUrl(agent.getApiUrl(), "/apache-manager/server/action/reload"),
+                getUrl(agent.getApiUrl(), "apache-manager/server/action/reload"),
                 null,
                 null);
 
@@ -351,7 +356,7 @@ public class RouterManagerBean implements RouterManager {
         // Stop httpd
         sendRequestWithReply(
                 REST_TYPE.POST,
-                getUrl(agent.getApiUrl(), "/apache-manager/server/action/stop"),
+                getUrl(agent.getApiUrl(), "apache-manager/server/action/stop"),
                 null,
                 null);
 
@@ -405,7 +410,7 @@ public class RouterManagerBean implements RouterManager {
 
         sendRequestWithReply(
                 REST_TYPE.POST,
-                getUrl(agent.getApiUrl(), "/jkmanager/worker/" + workerName),
+                getUrl(agent.getApiUrl(), "jkmanager/worker/" + workerName),
                 params,
                 null);
 
@@ -445,17 +450,17 @@ public class RouterManagerBean implements RouterManager {
             throw new RouterManagerBeanException("Unable to get the agent for router '" + routerName + "' !");
         }
 
-        // Add a worker
+        // Remove a worker
         MultivaluedMap<String, String> params = new MultivaluedMapImpl();
         params.add("name", workerName);
 
         sendRequestWithReply(
                 REST_TYPE.DELETE,
-                getUrl(agent.getApiUrl(), "/jkmanager/worker/" + workerName),
+                getUrl(agent.getApiUrl(), "jkmanager/worker/" + workerName),
                 params,
                 null);
 
-        // create the worker in sr
+        // remove the worker in sr
         srApacheJkEjb.removeWorker(apacheJk.getId(), workerName);
 
         logger.info("Router '" + routerName + "' - Worker '" +  workerName + "' removed !");
@@ -494,7 +499,7 @@ public class RouterManagerBean implements RouterManager {
         //Send request to the Agent to disable worker
         sendRequestWithReply(
                 REST_TYPE.POST,
-                getUrl(agent.getApiUrl(), "/jkmanager/worker/" + workerName + "/disable"),
+                getUrl(agent.getApiUrl(), "jkmanager/worker/" + workerName + "/disable"),
                 null,
                 null);
 
@@ -546,7 +551,7 @@ public class RouterManagerBean implements RouterManager {
         //Send request to the Agent to disable worker
         sendRequestWithReply(
                 REST_TYPE.POST,
-                getUrl(agent.getApiUrl(), "/jkmanager/worker/" + workerName + "/enable"),
+                getUrl(agent.getApiUrl(), "jkmanager/worker/" + workerName + "/enable"),
                 null,
                 null);
 
@@ -619,7 +624,7 @@ public class RouterManagerBean implements RouterManager {
 
         sendRequestWithReply(
                 REST_TYPE.POST,
-                getUrl(agent.getApiUrl(), "/jkmanager/loadbalancer/" + lbName),
+                getUrl(agent.getApiUrl(), "jkmanager/loadbalancer/" + lbName),
                 params,
                 null);
 
@@ -631,7 +636,7 @@ public class RouterManagerBean implements RouterManager {
 
             sendRequestWithReply(
                     REST_TYPE.POST,
-                    getUrl(agent.getApiUrl(), "/jkmanager/mount/" + lbName),
+                    getUrl(agent.getApiUrl(), "jkmanager/mount/" + lbName),
                     params,
                     null);
         }
@@ -671,7 +676,7 @@ public class RouterManagerBean implements RouterManager {
         if (agent == null) {
             throw new RouterManagerBeanException("Unable to get the agent for router '" + routerName + "' !");
         }
-        
+
         // Get the Load Balancer
         List<LoadBalancerVO> loadBalancerVOList = apacheJk.getLoadBalancerList();
         LoadBalancerVO loadBalancer = null;
@@ -687,14 +692,14 @@ public class RouterManagerBean implements RouterManager {
         }
 
         // Remove a loadbalancer
-       
+
         //Send request to the Agent to remove the Load Balancer        
         sendRequestWithReply(
                 REST_TYPE.DELETE,
-                getUrl(agent.getApiUrl(), "/jkmanager/loadbalancer/" + lbName),
+                getUrl(agent.getApiUrl(), "jkmanager/loadbalancer/" + lbName),
                 null,
                 null);
-        
+
         //Send requests to the Agent to remove the loadBalancer Mount Points
         MultivaluedMap<String, String> params = new MultivaluedMapImpl();
         for (String path : loadBalancer.getMountPoints()) {
@@ -703,7 +708,7 @@ public class RouterManagerBean implements RouterManager {
 
             sendRequestWithReply(
                     REST_TYPE.DELETE,
-                    getUrl(agent.getApiUrl(), "/jkmanager/mount/" + lbName),
+                    getUrl(agent.getApiUrl(), "jkmanager/mount/" + lbName),
                     params,
                     null);
         }
@@ -743,7 +748,7 @@ public class RouterManagerBean implements RouterManager {
 
         Client client = Client.create();
 
-        WebResource webResource = client.resource(url);
+        WebResource webResource = client.resource(removeRedundantForwardSlash(url));
 
         if (params != null) {
             webResource = webResource.queryParams(params);
@@ -771,7 +776,7 @@ public class RouterManagerBean implements RouterManager {
         int status = clientResponse.getStatus();
 
         if (status != HTTP_STATUS_ACCEPTED && status != HTTP_STATUS_OK
-                && status != HTTP_STATUS_NO_CONTENT) {
+                && status != HTTP_STATUS_NO_CONTENT && status != HTTP_STATUS_CREATED) {
             throw new RouterManagerBeanException(
                     "Error on JOnAS agent request : " + status);
         }
@@ -779,11 +784,12 @@ public class RouterManagerBean implements RouterManager {
         ResponseClass r = null;
 
         if (status != HTTP_STATUS_NO_CONTENT) {
-            if (clientResponse.getType() != MediaType.APPLICATION_XML_TYPE) {
+            //ToDo Apache-Manager REST interfaces need to be harmonized
+/*            if (clientResponse.getType() != MediaType.APPLICATION_XML_TYPE) {
                 throw new RouterManagerBeanException(
                         "Error on JOnAS agent response, unexpected type : "
                                 + clientResponse.getType());
-            }
+            }*/
 
             if (responseClass != null)
                 r = clientResponse.getEntity(responseClass);
@@ -793,5 +799,15 @@ public class RouterManagerBean implements RouterManager {
 
         return r;
 
+    }
+
+    /**
+     * Remove redundant forward slash in a String url
+     * @param s a String url
+     * @return The String url without redundant forward slash
+     */
+    private String removeRedundantForwardSlash(String s) {
+        String tmp = s.replaceAll("/+", "/");
+        return tmp.replaceAll(":/", "://");
     }
 }
