@@ -49,6 +49,8 @@ import com.sun.jersey.core.util.MultivaluedMapImpl;
 import javax.ejb.Local;
 import javax.ejb.Remote;
 import javax.ejb.Stateless;
+import javax.ejb.TransactionAttribute;
+import javax.ejb.TransactionAttributeType;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedMap;
 
@@ -150,6 +152,7 @@ public class RouterManagerBean implements RouterManager {
      * @param listenPort the listen port
      * @throws RouterManagerBeanException
      */
+    @TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
     public void createRouter(String routerName, String paasAgentName,
             String paasConfigurationName, Integer listenPort)
             throws RouterManagerBeanException {
@@ -237,6 +240,7 @@ public class RouterManagerBean implements RouterManager {
      * @param routerName name of the router to remove
      * @throws RouterManagerBeanException
      */
+    @TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
     public void removeRouter(String routerName)
             throws RouterManagerBeanException {
 
@@ -278,6 +282,7 @@ public class RouterManagerBean implements RouterManager {
      * @param routerName Name of the router to start
      * @throws RouterManagerBeanException
      */
+    @TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
     public void startRouter(String routerName)
             throws RouterManagerBeanException {
 
@@ -326,6 +331,7 @@ public class RouterManagerBean implements RouterManager {
      * @param routerName Name of the router to stop
      * @throws RouterManagerBeanException
      */
+    @TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
     public void stopRouter(String routerName) throws RouterManagerBeanException {
 
         logger.info("Router '" + routerName + "' stopping ....");
@@ -375,6 +381,7 @@ public class RouterManagerBean implements RouterManager {
      * @param targetPortNumber the worker target port number
      * @throws RouterManagerBeanException
      */
+    @TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
     public void createWorker(String routerName, String workerName,
             String targetHost, Integer targetPortNumber)
             throws RouterManagerBeanException {
@@ -426,6 +433,7 @@ public class RouterManagerBean implements RouterManager {
      * @param workerName Name of the worker to remove
      * @throws RouterManagerBeanException
      */
+    @TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
     public void removeWorker(String routerName, String workerName)
             throws RouterManagerBeanException {
         logger.info("Router '" + routerName + "' - Delete Worker '" +  workerName + "'");
@@ -472,6 +480,7 @@ public class RouterManagerBean implements RouterManager {
      * @param workerName Name of the worker to disable
      * @throws RouterManagerBeanException
      */
+    @TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
     public void disableWorker(String routerName, String workerName)
             throws RouterManagerBeanException {
         logger.info("Router '" + routerName + "' - Disable Worker '" +  workerName + "'");
@@ -524,6 +533,7 @@ public class RouterManagerBean implements RouterManager {
      * @param workerName Name of the worker to enable
      * @throws RouterManagerBeanException
      */
+    @TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
     public void enableWorker(String routerName, String workerName)
             throws RouterManagerBeanException {
         logger.info("Router '" + routerName + "' - Enable Worker '" +  workerName + "'");
@@ -578,6 +588,7 @@ public class RouterManagerBean implements RouterManager {
      * @param mountsPoints the mount Points of this load balancer
      * @throws RouterManagerBeanException
      */
+    @TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
     public void createLoadBalancer(String routerName, String lbName,
             List<String> workedList, List<String> mountsPoints)
             throws RouterManagerBeanException {
@@ -653,6 +664,7 @@ public class RouterManagerBean implements RouterManager {
      * @param lbName  Name of the load balancer
      * @throws RouterManagerBeanException
      */
+    @TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
     public void removeLoadBalancer(String routerName, String lbName)
             throws RouterManagerBeanException {
         logger.info("Router '" + routerName + "' - Delete Loadbalancer '" +  lbName + "'");
