@@ -447,6 +447,13 @@ public class RouterManagerBean implements RouterManager {
                 params,
                 null);
 
+        // Ask for a reload
+        sendRequestWithReply(
+                REST_TYPE.POST,
+                getUrl(agent.getApiUrl(), "apache-manager/server/action/reload"),
+                null,
+                null);
+
         // create the worker in sr
         srApacheJkEjb.addWorker(apacheJk.getId(), workerName, targetHost, targetPortNumber);
 
@@ -494,6 +501,13 @@ public class RouterManagerBean implements RouterManager {
                 params,
                 null);
 
+        // Ask for a reload
+        sendRequestWithReply(
+                REST_TYPE.POST,
+                getUrl(agent.getApiUrl(), "apache-manager/server/action/reload"),
+                null,
+                null);
+
         // remove the worker in sr
         srApacheJkEjb.removeWorker(apacheJk.getId(), workerName);
 
@@ -535,6 +549,13 @@ public class RouterManagerBean implements RouterManager {
         sendRequestWithReply(
                 REST_TYPE.POST,
                 getUrl(agent.getApiUrl(), "jkmanager/worker/" + workerName + "/disable"),
+                null,
+                null);
+
+        // Ask for a reload
+        sendRequestWithReply(
+                REST_TYPE.POST,
+                getUrl(agent.getApiUrl(), "apache-manager/server/action/reload"),
                 null,
                 null);
 
@@ -584,10 +605,17 @@ public class RouterManagerBean implements RouterManager {
             throw new RouterManagerBeanException("Unable to get the agent for router '" + routerName + "' !");
         }
 
-        //Send request to the Agent to disable worker
+        //Send request to the Agent to enable worker
         sendRequestWithReply(
                 REST_TYPE.POST,
                 getUrl(agent.getApiUrl(), "jkmanager/worker/" + workerName + "/enable"),
+                null,
+                null);
+
+        // Ask for a reload
+        sendRequestWithReply(
+                REST_TYPE.POST,
+                getUrl(agent.getApiUrl(), "apache-manager/server/action/reload"),
                 null,
                 null);
 
@@ -665,6 +693,13 @@ public class RouterManagerBean implements RouterManager {
                 params,
                 null);
 
+        // Ask for a reload
+        sendRequestWithReply(
+                REST_TYPE.POST,
+                getUrl(agent.getApiUrl(), "apache-manager/server/action/reload"),
+                null,
+                null);
+
 
         //Send requests to the Agent to create the loadBalancer Mount Points
         for (String path : mountsPoints) {
@@ -735,6 +770,13 @@ public class RouterManagerBean implements RouterManager {
         sendRequestWithReply(
                 REST_TYPE.DELETE,
                 getUrl(agent.getApiUrl(), "jkmanager/loadbalancer/" + lbName),
+                null,
+                null);
+
+        // Ask for a reload
+        sendRequestWithReply(
+                REST_TYPE.POST,
+                getUrl(agent.getApiUrl(), "apache-manager/server/action/reload"),
                 null,
                 null);
 
