@@ -31,9 +31,12 @@ import org.ow2.jonas.jpaas.catalog.api.PaasConfiguration;
 import org.ow2.jonas.jpaas.router.manager.api.RouterManager;
 import org.ow2.jonas.jpaas.router.manager.api.RouterManagerBeanException;
 import org.ow2.jonas.jpaas.sr.facade.api.ISrPaasAgentFacade;
+import org.ow2.jonas.jpaas.sr.facade.api.ISrPaasAgentIaasComputeLink;
 import org.ow2.jonas.jpaas.sr.facade.api.ISrPaasApacheJkRouterFacade;
+import org.ow2.jonas.jpaas.sr.facade.api.ISrPaasResourceIaasComputeLink;
 import org.ow2.jonas.jpaas.sr.facade.api.ISrPaasResourcePaasAgentLink;
 import org.ow2.jonas.jpaas.sr.facade.vo.ApacheJkVO;
+import org.ow2.jonas.jpaas.sr.facade.vo.IaasComputeVO;
 import org.ow2.jonas.jpaas.sr.facade.vo.LoadBalancerVO;
 import org.ow2.jonas.jpaas.sr.facade.vo.PaasAgentVO;
 import org.ow2.jonas.jpaas.sr.facade.vo.PaasResourceVO;
@@ -51,10 +54,8 @@ import javax.ejb.Remote;
 import javax.ejb.Stateless;
 import javax.ejb.TransactionAttribute;
 import javax.ejb.TransactionAttributeType;
-import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedMap;
 
-import java.util.ArrayList;
 import java.util.List;
 
 @Stateless(mappedName = "RouterManagerBean")
@@ -133,10 +134,22 @@ public class RouterManagerBean implements RouterManager {
     private ISrPaasAgentFacade srAgentEjb;
 
     /**
-     * SR facade jonas - agent link
+     * SR facade apache - agent link
      */
     @OSGiResource
     private ISrPaasResourcePaasAgentLink srApacheAgentLinkEjb;
+
+    /**
+     * SR facade agent - iaasCompute link
+     */
+    @OSGiResource
+    private ISrPaasAgentIaasComputeLink srPaasAgentIaasComputeLink;
+
+    /**
+     * SR facade paasResource - iaasCompute link
+     */
+    @OSGiResource
+    private ISrPaasResourceIaasComputeLink srPaasResourceIaasComputeLink;
 
     /**
      * Constructor
@@ -223,6 +236,12 @@ public class RouterManagerBean implements RouterManager {
             srApacheAgentLinkEjb.addPaasResourceAgentLink(apacheJk.getId(), agent.getId());
         }
 
+        //create the link between the PaaS Router and the IaaS Compute
+        IaasComputeVO iaasCompute = srPaasAgentIaasComputeLink.findIaasComputeByPaasAgent(agent.getId());
+        if (iaasCompute != null) {
+            srPaasResourceIaasComputeLink.addPaasResourceIaasComputeLink(apacheJk.getId(), iaasCompute.getId());
+        }
+
         // TODO use port range to customize apache conf (vhost)
 
         // TODO Create the virtual host for this router
@@ -270,6 +289,13 @@ public class RouterManagerBean implements RouterManager {
         }
 
         //TODO remove the vhost
+
+        //remove apache - iaasCompute link
+        IaasComputeVO iaasCompute = srPaasResourceIaasComputeLink.findIaasComputeByPaasResource(apacheJk.getId());
+        if (iaasCompute != null) {
+            srPaasResourceIaasComputeLink.removePaasResourceIaasComputeLink(apacheJk.getId(),
+                    iaasCompute.getId());
+        }
 
         // remove router in sr
         srApacheJkEjb.deleteApacheJkRouter(apacheJk.getId());
