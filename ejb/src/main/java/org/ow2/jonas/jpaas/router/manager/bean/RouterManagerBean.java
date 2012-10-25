@@ -56,6 +56,7 @@ import javax.ejb.TransactionAttribute;
 import javax.ejb.TransactionAttributeType;
 import javax.ws.rs.core.MultivaluedMap;
 
+import java.util.LinkedList;
 import java.util.List;
 
 @Stateless(mappedName = "RouterManagerBean")
@@ -428,36 +429,48 @@ public class RouterManagerBean implements RouterManager {
             throw new RouterManagerBeanException("Router '" + routerName + "' doesn't exist !");
         }
 
-        // Get the agent
-        PaasAgentVO agent = srApacheAgentLinkEjb.findAgentByPaasResource(apacheJk.getId());
-
-        if (agent == null) {
-            throw new RouterManagerBeanException("Unable to get the agent for router '" + routerName + "' !");
+        //Do nothing if there is already a worker with the same name
+        boolean workerExists = false;
+        List<WorkerVO> workerVOList = apacheJk.getWorkerList();
+        for (WorkerVO worker : workerVOList) {
+            if (worker.getName().equals(workerName)) {
+                workerExists=true;
+                break;
+            }
         }
 
-        // Add a worker
-        MultivaluedMap<String, String> params = new MultivaluedMapImpl();
-        params.add("name", workerName);
-        params.add("host", targetHost);
-        params.add("port", targetPortNumber.toString());
+        if (!workerExists) {
+            // Get the agent
+            PaasAgentVO agent = srApacheAgentLinkEjb.findAgentByPaasResource(apacheJk.getId());
 
-        sendRequestWithReply(
-                REST_TYPE.POST,
-                getUrl(agent.getApiUrl(), "jkmanager/worker/" + workerName),
-                params,
-                null);
+            if (agent == null) {
+                throw new RouterManagerBeanException("Unable to get the agent for router '" + routerName + "' !");
+            }
 
-        // Ask for a reload
-        sendRequestWithReply(
-                REST_TYPE.POST,
-                getUrl(agent.getApiUrl(), "apache-manager/server/action/reload"),
-                null,
-                null);
+            // Add a worker
+            MultivaluedMap<String, String> params = new MultivaluedMapImpl();
+            params.add("name", workerName);
+            params.add("host", targetHost);
+            params.add("port", targetPortNumber.toString());
 
-        // create the worker in sr
-        srApacheJkEjb.addWorker(apacheJk.getId(), workerName, targetHost, targetPortNumber);
+            sendRequestWithReply(
+                    REST_TYPE.POST,
+                    getUrl(agent.getApiUrl(), "jkmanager/worker/" + workerName),
+                    params,
+                    null);
 
-        logger.info("Router '" + routerName + "' - Worker '" +  workerName + "' created !");
+            // Ask for a reload
+            sendRequestWithReply(
+                    REST_TYPE.POST,
+                    getUrl(agent.getApiUrl(), "apache-manager/server/action/reload"),
+                    null,
+                    null);
+
+            // create the worker in sr
+            srApacheJkEjb.addWorker(apacheJk.getId(), workerName, targetHost, targetPortNumber);
+
+            logger.info("Router '" + routerName + "' - Worker '" +  workerName + "' created !");
+        }
     }
 
     /**
@@ -693,13 +706,6 @@ public class RouterManagerBean implements RouterManager {
                 params,
                 null);
 
-        // Ask for a reload
-        sendRequestWithReply(
-                REST_TYPE.POST,
-                getUrl(agent.getApiUrl(), "apache-manager/server/action/reload"),
-                null,
-                null);
-
 
         //Send requests to the Agent to create the loadBalancer Mount Points
         for (String path : mountsPoints) {
@@ -712,6 +718,13 @@ public class RouterManagerBean implements RouterManager {
                     params,
                     null);
         }
+
+        // Ask for a reload
+        sendRequestWithReply(
+                REST_TYPE.POST,
+                getUrl(agent.getApiUrl(), "apache-manager/server/action/reload"),
+                null,
+                null);
 
         // create the LoadBalancer in sr
         srApacheJkEjb.addLoadBalancer(apacheJk.getId(), lbName, mountsPoints, workedList);
@@ -797,6 +810,87 @@ public class RouterManagerBean implements RouterManager {
         srApacheJkEjb.removeLoadBalancer(apacheJk.getId(), lbName);
 
         logger.info("Router '" + routerName + "' - Loadbalancer '" +  lbName + "' removed !");
+    }
+
+    /**
+     * add a worker to a loadbalancer
+     *
+     * @param routerName Name of the router
+     * @param lbName     Name of the load balancer
+     * @throws org.ow2.jonas.jpaas.router.manager.api.RouterManagerBeanException
+     *
+     */
+    @TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
+    public void addWorkerToLoadBalancer(String routerName, String lbName, String workerName) throws RouterManagerBeanException {
+        // get the router from SR
+        ApacheJkVO apacheJk = null;
+        List<ApacheJkVO> apacheJkVOList = srApacheJkEjb.findApacheJkRouters();
+        for (ApacheJkVO tmp : apacheJkVOList) {
+            if (tmp.getName().equals(routerName)) {
+                apacheJk = tmp;
+                break;
+            }
+        }
+        if (apacheJk == null) {
+            throw new RouterManagerBeanException("Router '" + routerName + "' doesn't exist !");
+        }
+
+        // Get the agent
+        PaasAgentVO agent = srApacheAgentLinkEjb.findAgentByPaasResource(apacheJk.getId());
+
+        if (agent == null) {
+            throw new RouterManagerBeanException("Unable to get the agent for router '" + routerName + "' !");
+        }
+
+        // Get the Load Balancer
+        List<LoadBalancerVO> loadBalancerVOList = apacheJk.getLoadBalancerList();
+        LoadBalancerVO loadBalancer = null;
+        for (LoadBalancerVO lbVO : loadBalancerVOList) {
+            if (lbName.equals(lbVO.getName())) {
+                loadBalancer = lbVO;
+                break;
+            }
+        }
+        if (loadBalancer == null) {
+            throw new RouterManagerBeanException("Unable to get the Load Balancer '" + lbName + "' for router '" +
+                    routerName + "' !");
+        }
+
+        List<String> workerList = loadBalancer.getWorkers();
+        if (workerList == null) {
+            workerList = new LinkedList<String>();
+        }
+        workerList.add(workerName);
+
+        // Create a String from the WorkerList
+        String wl = "";
+        boolean first = true;
+        for(String s : workerList) {
+            if (first) {
+                first=false;
+            } else {
+                wl += ",";
+            }
+            wl += s;
+        }
+
+        //Send request to the Agent to create the loadBalancer
+        MultivaluedMap<String, String> params = new MultivaluedMapImpl();
+        params.add("name", lbName);
+        params.add("wl", wl);
+
+        sendRequestWithReply(
+                REST_TYPE.PUT,
+                getUrl(agent.getApiUrl(), "jkmanager/loadbalancer/" + lbName),
+                params,
+                null);
+
+        // Ask for a reload
+        sendRequestWithReply(
+                REST_TYPE.POST,
+                getUrl(agent.getApiUrl(), "apache-manager/server/action/reload"),
+                null,
+                null);
     }
 
     /**

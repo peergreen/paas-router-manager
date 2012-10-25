@@ -37,7 +37,8 @@ public interface RouterManager {
      * @param listenPort the listen port
      * @throws RouterManagerBeanException
      */
-    public void createRouter(String routerName, String paasAgentName, String paasConfigurationName, Integer listenPort) throws RouterManagerBeanException;
+    public void createRouter(String routerName, String paasAgentName, String paasConfigurationName, Integer listenPort)
+            throws RouterManagerBeanException;
 
     /**
      * Remove a router
@@ -68,7 +69,8 @@ public interface RouterManager {
      * @param targetPortNumber the worker target port number
      * @throws RouterManagerBeanException
      */
-    public void createWorker(String routerName, String workerName, String targetHost, Integer targetPortNumber) throws RouterManagerBeanException ;
+    public void createWorker(String routerName, String workerName, String targetHost, Integer targetPortNumber)
+            throws RouterManagerBeanException ;
 
     /**
      * Remove a worker
@@ -97,18 +99,30 @@ public interface RouterManager {
     /**
      * Create a loadbalancer
      * @param routerName Name of the router
-     * @param IbName  Name of the load balancer
+     * @param lbName  Name of the load balancer
      * @param workedList  the workers balanced by this load balancer
      * @param mountsPoints the mount Points of this load balancer
      * @throws RouterManagerBeanException
      */
-    public void createLoadBalancer(String routerName, String IbName, List<String> workedList, List<String> mountsPoints) throws RouterManagerBeanException;
+    public void createLoadBalancer(String routerName, String lbName, List<String> workedList, List<String> mountsPoints)
+            throws RouterManagerBeanException;
 
     /**
      * Remove a loadbalancer
      * @param routerName Name of the router
-     * @param IbName  Name of the load balancer
+     * @param lbName  Name of the load balancer
      * @throws RouterManagerBeanException
      */
-    public void removeLoadBalancer(String routerName, String IbName) throws RouterManagerBeanException ;
+    public void removeLoadBalancer(String routerName, String lbName) throws RouterManagerBeanException;
+
+    /**
+     * add a worker to a loadbalancer
+     * @param routerName Name of the router
+     * @param lbName  Name of the load balancer
+     * @throws RouterManagerBeanException
+     */
+    public void addWorkerToLoadBalancer(String routerName, String lbName, String workerName)
+            throws RouterManagerBeanException;
+
+
 }
