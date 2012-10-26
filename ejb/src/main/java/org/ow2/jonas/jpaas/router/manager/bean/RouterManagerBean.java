@@ -58,6 +58,7 @@ import javax.ws.rs.core.MultivaluedMap;
 
 import java.util.LinkedList;
 import java.util.List;
+import java.util.ListIterator;
 
 @Stateless(mappedName = "RouterManagerBean")
 @Local(RouterManager.class)
@@ -520,6 +521,21 @@ public class RouterManagerBean implements RouterManager {
                 getUrl(agent.getApiUrl(), "apache-manager/server/action/reload"),
                 null,
                 null);
+
+        //remove the worker in LoadBalancer workers list
+        List<LoadBalancerVO> loadBalancerVOList = apacheJk.getLoadBalancerList();
+        for (LoadBalancerVO loadBalancer : loadBalancerVOList) {
+            List<String> workers = loadBalancer.getWorkers();
+            for (ListIterator<String> iterator = workers.listIterator(); iterator.hasNext();) {
+                String tmp = iterator.next();
+                if (tmp.equals(workerName)) {
+                    iterator.remove();
+                    logger.debug("Worker " + workerName + " removed in LoadBalancer " + loadBalancer.getName() + ".");
+                    break;
+                }
+            }
+        }
+        apacheJk = srApacheJkEjb.updateApacheJkRouter(apacheJk);
 
         // remove the worker in sr
         srApacheJkEjb.removeWorker(apacheJk.getId(), workerName);
