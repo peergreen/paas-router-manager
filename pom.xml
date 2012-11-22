@@ -54,7 +54,11 @@
       <url>http://www.apache.org/licenses/LICENSE-2.0</url>
     </license>
   </licenses>
-
+  <scm>
+    <connection>scm:git:git://gitorious.ow2.org/ow2-jasmine/jpaas-router-manager.git</connection>
+    <developerConnection>scm:git:git@gitorious.ow2.org:ow2-jasmine/jpaas-router-manager.git</developerConnection>
+    <url>http://gitorious.ow2.org/ow2-jasmine/jpaas-router-manager/trees/master</url>
+  </scm>
   <modules>
     <module>ejb</module>
   </modules>
