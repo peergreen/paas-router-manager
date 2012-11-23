@@ -40,8 +40,8 @@
   <properties>
     <jonas.agent.version>5.3.0-M7</jonas.agent.version>
     <jersey.rest.client>1.9.1</jersey.rest.client>
-    <jpaas.catalog.version>1.0.0-SNAPSHOT</jpaas.catalog.version>
-    <jpaas.sr.version>1.1.1-SNAPSHOT</jpaas.sr.version>
+    <jpaas.catalog.version>1.0.0-M1</jpaas.catalog.version>
+    <jpaas.sr.version>1.0.0-M1</jpaas.sr.version>
     <easybeans.annotations.version>2.0.0-M1</easybeans.annotations.version>
     <ow2-bundles.version>1.0.32</ow2-bundles.version>
     <ow2-spec.version>1.0.10</ow2-spec.version>
