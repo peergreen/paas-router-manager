@@ -18,47 +18,53 @@
   -
   - $Id:$
 -->
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-  <modelVersion>4.0.0</modelVersion>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
 
-  <parent>
-    <groupId>org.ow2</groupId>
-    <artifactId>ow2</artifactId>
-    <version>1.3</version>
-  </parent>
+    <parent>
+        <groupId>org.ow2</groupId>
+        <artifactId>ow2</artifactId>
+        <version>1.3</version>
+    </parent>
 
-  <groupId>org.ow2.jonas.jpaas</groupId>
-  <artifactId>jpaas-router-manager</artifactId>
-  <version>1.0.0-M2-SNAPSHOT</version>
-  <packaging>pom</packaging>
-  <name>JPaaS :: Router Manager</name>
+    <groupId>org.ow2.jonas.jpaas</groupId>
+    <artifactId>jpaas-router-manager</artifactId>
+    <version>1.0.0-M2-SNAPSHOT</version>
+    <packaging>pom</packaging>
+    <name>JPaaS :: Router Manager</name>
 
-  <description>JPaaS :: Router Manager</description>
+    <description>JPaaS :: Router Manager</description>
 
-  <properties>
-    <jonas.agent.version>5.3.0-M7</jonas.agent.version>
-    <jersey.rest.client>1.9.1</jersey.rest.client>
-    <jpaas.catalog.version>1.0.0-M1</jpaas.catalog.version>
-    <jpaas.sr.version>1.0.0-M1</jpaas.sr.version>
-    <easybeans.annotations.version>2.0.0-M1</easybeans.annotations.version>
-    <ow2-bundles.version>1.0.32</ow2-bundles.version>
-    <ow2-spec.version>1.0.10</ow2-spec.version>
-   </properties>
-   
-  <developers />
-  <licenses>
-    <license>
-      <name>The Apache Software License, Version 2.0</name>
-      <url>http://www.apache.org/licenses/LICENSE-2.0</url>
-    </license>
-  </licenses>
-  <scm>
-    <connection>scm:git:git://gitorious.ow2.org/ow2-jasmine/jpaas-router-manager.git</connection>
-    <developerConnection>scm:git:git@gitorious.ow2.org:ow2-jasmine/jpaas-router-manager.git</developerConnection>
-    <url>http://gitorious.ow2.org/ow2-jasmine/jpaas-router-manager/trees/master</url>
-  </scm>
-  <modules>
-    <module>ejb</module>
-  </modules>
+    <properties>
+        <jonas.agent.version>5.3.0-M7</jonas.agent.version>
+        <jersey.rest.client>1.9.1</jersey.rest.client>
+        <jpaas.catalog.version>1.0.0-M2-SNAPSHOT</jpaas.catalog.version>
+        <jpaas.sr.version>1.0.0-M2-SNAPSHOT</jpaas.sr.version>
+        <easybeans.annotations.version>2.0.0-M1</easybeans.annotations.version>
+        <ow2-bundles.version>1.0.32</ow2-bundles.version>
+        <ow2-spec.version>1.0.13</ow2-spec.version>
+        <ipojo.version>1.10.1</ipojo.version>
+
+    </properties>
+
+    <developers/>
+    <licenses>
+        <license>
+            <name>The Apache Software License, Version 2.0</name>
+            <url>http://www.apache.org/licenses/LICENSE-2.0</url>
+        </license>
+    </licenses>
+    <scm>
+        <connection>scm:git:https://forge.peergreen.com/git/git/jpaas/jpaas-router-manager.git</connection>
+        <developerConnection>scm:git:https://forge.peergreen.com/git/git/jpaas/jpaas-router-manager.git</developerConnection>
+        <url>https://forge.peergreen.com/git/summary/?r=jpaas/jpaas-router-manager.git</url>
+        <tag>HEAD</tag>
+    </scm>
+    <modules>
+        <module>api</module>
+        <module>mock</module>
+        <module>ejb</module>
+    </modules>
 
 </project>
