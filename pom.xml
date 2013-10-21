@@ -1,70 +1,35 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!--
-  - JPaaS
-  - Copyright (C) 2011-2012 Bull S.A.S.
-  - Contact: jonas@ow2.org
-  -
-  - Licensed under the Apache License, Version 2.0 (the "License");
-  - you may not use this file except in compliance with the License.
-  - You may obtain a copy of the License at
-  - 
-  -     http://www.apache.org/licenses/LICENSE-2.0
-  - 
-  - Unless required by applicable law or agreed to in writing, software
-  - distributed under the License is distributed on an "AS IS" BASIS,
-  - WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-  - See the License for the specific language governing permissions and
-  - limitations under the License.
-  -
-  - $Id:$
--->
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-    <modelVersion>4.0.0</modelVersion>
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+  <parent>
+    <groupId>com.peergreen.paas</groupId>
+    <artifactId>paas-parent</artifactId>
+    <version>1-SNAPSHOT</version>
+  </parent>
+  <modelVersion>4.0.0</modelVersion>
+  <artifactId>paas-router-manager</artifactId>
+  <packaging>pom</packaging>
+  <version>1.0.0-M1-SNAPSHOT</version>
 
-    <parent>
-        <groupId>org.ow2</groupId>
-        <artifactId>ow2</artifactId>
-        <version>1.3</version>
-    </parent>
+  <name>PG PaaS :: Router Manager</name>
 
-    <groupId>org.ow2.jonas.jpaas</groupId>
-    <artifactId>jpaas-router-manager</artifactId>
-    <version>1.0.0-M2-SNAPSHOT</version>
-    <packaging>pom</packaging>
-    <name>JPaaS :: Router Manager</name>
+  <properties>
+    <jonas.agent.version>5.3.0</jonas.agent.version>
+    <jersey.rest.client>1.9.1</jersey.rest.client>
+    <paas-catalog.version>1.0.0-M1-SNAPSHOT</paas-catalog.version>
+    <paas-sr.version>1.0.0-M1-SNAPSHOT</paas-sr.version>
+  </properties>
 
-    <description>JPaaS :: Router Manager</description>
-
-    <properties>
-        <jonas.agent.version>5.3.0-M7</jonas.agent.version>
-        <jersey.rest.client>1.9.1</jersey.rest.client>
-        <jpaas.catalog.version>1.0.0-M2-SNAPSHOT</jpaas.catalog.version>
-        <jpaas.sr.version>1.0.0-M2-SNAPSHOT</jpaas.sr.version>
-        <easybeans.annotations.version>2.0.0-M1</easybeans.annotations.version>
-        <ow2-bundles.version>1.0.32</ow2-bundles.version>
-        <ow2-spec.version>1.0.13</ow2-spec.version>
-        <ipojo.version>1.10.1</ipojo.version>
-
-    </properties>
-
-    <developers/>
-    <licenses>
-        <license>
-            <name>The Apache Software License, Version 2.0</name>
-            <url>http://www.apache.org/licenses/LICENSE-2.0</url>
-        </license>
-    </licenses>
-    <scm>
-        <connection>scm:git:https://forge.peergreen.com/git/git/jpaas/jpaas-router-manager.git</connection>
-        <developerConnection>scm:git:https://forge.peergreen.com/git/git/jpaas/jpaas-router-manager.git</developerConnection>
-        <url>https://forge.peergreen.com/git/summary/?r=jpaas/jpaas-router-manager.git</url>
-        <tag>HEAD</tag>
-    </scm>
-    <modules>
-        <module>api</module>
-        <module>mock</module>
-        <module>ejb</module>
-    </modules>
+  <scm>
+    <connection>scm:git:https://forge.peergreen.com/git/git/paas/paas-router-manager.git</connection>
+    <developerConnection>scm:git:https://forge.peergreen.com/git/git/paas/paas-router-manager.git</developerConnection>
+    <url>https://forge.peergreen.com/git/summary/?r=paas/paas-router-manager.git</url>
+    <tag>HEAD</tag>
+  </scm>
+  <modules>
+    <module>api</module>
+    <module>mock</module>
+    <module>ejb</module>
+  </modules>
 
 </project>
